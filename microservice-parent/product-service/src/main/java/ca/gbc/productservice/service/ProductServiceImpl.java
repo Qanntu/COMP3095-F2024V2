@@ -35,8 +35,11 @@ public class ProductServiceImpl implements ProductService{
         //persist a product
         productRepository.save(product);
         log.info("Product {} is saved", product.getId());
-        return new ProductResponse(product.getId(), product.getName(),
-                product.getDescription(), product.getPrice());
+        return new ProductResponse(
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getPrice());
 
 
     }
@@ -51,8 +54,11 @@ public class ProductServiceImpl implements ProductService{
     }
 
     private ProductResponse mapToProductResponse(Product product){
-        return new ProductResponse(product.getId(), product.getName(),
-                product.getDescription(), product.getPrice());
+        return new ProductResponse(
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getPrice());
     }
 
     @Override

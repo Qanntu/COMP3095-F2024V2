@@ -7,5 +7,6 @@ public record OrderRequest(
         String orderNumber,
         String skuCode,
         BigDecimal price,
-        Integer quantity
+        Integer quantity,
+        String status
 ) { }

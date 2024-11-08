@@ -3,6 +3,7 @@ package ca.gbc.orderservice.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.Data;
 
 import java.math.BigDecimal;
 
@@ -10,6 +11,7 @@ import java.math.BigDecimal;
 @Table(name = "t_orders")
 @Getter
 @Setter
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -24,4 +26,5 @@ public class Order {
     private String skuCode;
     private BigDecimal price;
     private Integer quantity;
+    private String status;
 }

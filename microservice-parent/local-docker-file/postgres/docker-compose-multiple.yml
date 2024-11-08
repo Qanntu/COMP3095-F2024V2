@@ -1,41 +1,53 @@
 #version: '3.9'
 
+
 services:
 
-  postgres:
+  postgres-order:
     image: postgres
+    container_name: local-postgres-order
+    restart: unless-stopped
     ports:
-      - "5434:5432"
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=order-service
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - PGDATA=/data/postgres
+    volumes:
+      - ./data/postgres/order:/data/postgres
+      - ./init/postgres/order/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - spring
 
+  postgres-inventory:
+    image: postgres
     container_name: postgres-inventory
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=inventory-service
+      - PGDATA=/data/postgres
     volumes:
-      - ./data/inventory:/var/lib/postgresql/data # The database will persist data here on the host machine
-      - ./init/inventory/init.sql:/docker-entrypoint-initdb.d/init.sql # Initialize MongoDB WITH DATA FROM THIS SCRIPT
-
-#  postgres:
-#    image: postgres
-#    ports:
-#      - "5432:5432"
-
-#    container_name: postgres-single
-#    environment:
-#      - POSTGRES_USER=admin
-#      - POSTGRES_PASSWORD=password
-#    volumes:
-#      - ./data/order:/var/lib/postgresql/data # The database will persist data here on the host machine
-#      - ./init/order/init.sql:/docker-entrypoint-initdb.d/init.sql # Initialize MongoDB WITH DATA FROM THIS SCRIPT
-
+      - ./data/postgres/inventory:/data/postgres
+      - ./init/postgres/inventory/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - spring
 
   pgadmin:
     image: dpage/pgadmin4
+    container_name: pgadmin-inventory
+    restart: unless-stopped
     ports:
       - "8887:80"
-
-    container_name: pgadmin-inventory
     environment:
       - PGADMIN_DEFAULT_EMAIL=user@domain.ca
       - PGADMIN_DEFAULT_PASSWORD=password
+    networks:
+      - spring
+
+networks:
+  spring:
+    driver: bridge
