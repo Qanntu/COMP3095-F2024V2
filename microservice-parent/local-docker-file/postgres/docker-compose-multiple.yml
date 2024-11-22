@@ -1,53 +1,48 @@
 #version: '3.9'
 
-
 services:
 
   postgres-order:
     image: postgres
-    container_name: local-postgres-order
+    container_name: postgres-order
     restart: unless-stopped
     ports:
-      - "5433:5432"
+      - "5432:5432"
     environment:
-      - POSTGRES_DB=order-service
+      #- POSTGRES_DB=order-service
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
-      - PGDATA=/data/postgres
+      #- PGDATA=/data/postgres
     volumes:
-      - ./data/postgres/order:/data/postgres
-      - ./init/postgres/order/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - spring
+      #- ./data/postgres/order:/data/postgres
+      - ./data/order:/var/lib/postgresql/data
+      #- ./init/postgres/order/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init/order/init.sql:/docker-entrypoint-initdb.d/init.sql
+
 
   postgres-inventory:
     image: postgres
     container_name: postgres-inventory
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
-      - PGDATA=/data/postgres
+      #- PGDATA=/data/postgres
     volumes:
-      - ./data/postgres/inventory:/data/postgres
-      - ./init/postgres/inventory/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - spring
+      #- ./data/postgres/inventory:/data/postgres
+      - ./data/inventory:/var/lib/postgresql/data
+      #- ./init/postgres/inventory/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init/inventory/init.sql:/docker-entrypoint-initdb./init.sql
+
 
   pgadmin:
     image: dpage/pgadmin4
-    container_name: pgadmin-inventory
+    container_name: pgadmin-multiple
     restart: unless-stopped
     ports:
-      - "8887:80"
+      - "8888:80"
     environment:
       - PGADMIN_DEFAULT_EMAIL=user@domain.ca
       - PGADMIN_DEFAULT_PASSWORD=password
-    networks:
-      - spring
-
-networks:
-  spring:
-    driver: bridge

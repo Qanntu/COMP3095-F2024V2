@@ -40,14 +40,13 @@ services:
     restart: unless-stopped
     depends_on:
       - mongodb
-    networks:
-      - spring
+
 
 #optional volumes section for persisting data
-volumes:
-  mongo-db:
-    driver: local
+#volumes:
+ # mongo-db:
+  #  driver: local
 
-networks:
-  spring:
-    driver: bridge
+#networks:
+ # spring:
+  #  driver: bridge

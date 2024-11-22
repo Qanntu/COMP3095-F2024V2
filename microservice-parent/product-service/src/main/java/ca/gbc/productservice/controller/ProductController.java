@@ -42,13 +42,24 @@ public class ProductController {
                 .body(createProduct); //return the created product in the response body
     }
 
+    // Obtener un producto específico por ID
+    @GetMapping("/{productId}")
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable("productId") String productId) {
+        try {
+            ProductResponse productResponse = productService.getProductById(productId);
+            return ResponseEntity.ok(productResponse); // Devuelve 200 OK con el producto en el cuerpo
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Devuelve 404 NOT FOUND si no se encuentra
+        }
+    }
+
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ProductResponse> getAllProducts(){
 
         return productService.getAllProducts();
     }
-    //Http://localhost:8090/api/product/
+
 
     @PutMapping("/{productId}")
     //@ResponseStatus(HttpStatus.NO_CONTENT)
@@ -62,7 +73,6 @@ public class ProductController {
         return  new ResponseEntity<>(headers,HttpStatus.NO_CONTENT);
     }
 
-    //http://localhost:8080/api/product/
     @DeleteMapping("/{productId}")
     public ResponseEntity<?> deleteProduct(@PathVariable("productId") String productId){
         productService.deleteProduct(productId);
