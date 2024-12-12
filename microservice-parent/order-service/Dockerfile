@@ -7,7 +7,9 @@ FROM gradle:8-jdk-21-and-22-alpine AS builder
 
 #Copy the application files from the host machine to the image filesystem
 #we use the '--chown=gradle' flag to ensure proper file permisions for the Gradle user.
+
 COPY --chown=gradle:gradle . /home/gradle/src
+
 
 #Set the working directory inside the container to /home/gradle/src
 #All future commands will be executed from this directory

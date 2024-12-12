@@ -3,19 +3,15 @@ package ca.gbc.orderservice.service;
 import ca.gbc.orderservice.client.InventoryClient;
 import ca.gbc.orderservice.dto.OrderRequest;
 import ca.gbc.orderservice.dto.OrderResponse;
+import ca.gbc.orderservice.event.OrderPlacedEvent;
 import ca.gbc.orderservice.model.Order;
 import ca.gbc.orderservice.repository.OrderRepository;
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,20 +23,21 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class OrderServiceImpl implements OrderService{
+public class OrderServiceImpl implements OrderService {
 
-    private  final OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
 
-    private  final InventoryClient inventoryClient;
+    private final InventoryClient inventoryClient;
+
+    private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
 
     @Override
-    public void placeOrder(OrderRequest orderRequest){
+    public void placeOrder(OrderRequest orderRequest) {
 
         // check inventory
-
         var isProductInStock = inventoryClient.isInStock(orderRequest.skuCode(), orderRequest.quantity());
 
-        if(isProductInStock) {
+        if (isProductInStock) {
             Order order = Order.builder()
                     .orderNumber(UUID.randomUUID().toString())
                     .price(orderRequest.price())
@@ -49,11 +46,24 @@ public class OrderServiceImpl implements OrderService{
                     .build();
 
             orderRepository.save(order);
-        }else {
+
+            //Send message to Kafta on oreder-placed topic
+            OrderPlacedEvent orderPlacedEvent = new OrderPlacedEvent();
+            orderPlacedEvent.setOrderNumber(order.getOrderNumber());
+            orderPlacedEvent.setEmail(orderRequest.userDetails().email());
+            orderPlacedEvent.setFirstName(orderRequest.userDetails().firstName());
+            orderPlacedEvent.setLastName(orderRequest.userDetails().lastName());
+
+            log.info("Start - Sending OrderPlacedEvent {} to Kafka topic order--placed", orderPlacedEvent);
+            kafkaTemplate.send("order-placed", orderPlacedEvent);
+            log.info("Complete - Sent OrderPlacedEvent {} to Kafka topic order--placed", orderPlacedEvent);
+            log.info("Schema: {}", orderPlacedEvent.getSchema());
+
+        } else {
             throw new RuntimeException("Product with skuCode " + orderRequest.skuCode() + "is not in stock");
         }
-
     }
+
 
 
     // Get all orders

@@ -16,7 +16,7 @@ public class SecurityConfig {
 
     private final String[] noauthResourceUris = {
             "/swagger-ui",
-            "/swagger-ui/*",
+            "/swagger-ui/**",
             "/v3/api-docs/**",
             "/swagger-resources/**",
             "/api-docs/**",

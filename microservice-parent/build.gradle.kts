@@ -2,7 +2,6 @@ plugins {
     java
     id("org.springframework.boot") version "3.3.5"
     id("io.spring.dependency-management") version "1.1.6"
-
 }
 
 group = "ca.gbc"
@@ -16,16 +15,29 @@ java {
 
 repositories {
     mavenCentral()
+    maven {
+        url = uri("https://packages.confluent.io/maven/")
+    }
 }
 
-dependencies {
-    implementation("org.springframework.boot:spring-boot-starter")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
+subprojects {
+    if (project.name != "shared-schema") {
+        apply(plugin = "java")
+        apply(plugin = "io.spring.dependency-management")
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
+        repositories {
+            mavenCentral()
+        }
 
+        dependencies {
+            implementation("org.springframework.boot:spring-boot-starter")
+            testImplementation("org.springframework.boot:spring-boot-starter-test")
+            testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+        }
+
+        tasks.withType<Test> {
+            useJUnitPlatform()
+        }
+    }
+}
 

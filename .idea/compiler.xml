@@ -12,6 +12,7 @@
         <module name="microservice-parent.product-service.main" />
         <module name="microservice-parent.api-gateway.main" />
         <module name="microservice-parent.inventory-service.main" />
+        <module name="microservice-parent.notification-service.main" />
       </profile>
     </annotationProcessing>
   </component>

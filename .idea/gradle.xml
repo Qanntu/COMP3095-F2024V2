@@ -5,14 +5,17 @@
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/microservice-parent" />
-        <option name="gradleJvm" value="openjdk-20" />
+        <option name="gradleHome" value="$PROJECT_DIR$/../../../../Gradle/gradle-8.10" />
+        <option name="gradleJvm" value="openjdk-21" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/microservice-parent" />
             <option value="$PROJECT_DIR$/microservice-parent/api-gateway" />
             <option value="$PROJECT_DIR$/microservice-parent/inventory-service" />
+            <option value="$PROJECT_DIR$/microservice-parent/notification-service" />
             <option value="$PROJECT_DIR$/microservice-parent/order-service" />
             <option value="$PROJECT_DIR$/microservice-parent/product-service" />
+            <option value="$PROJECT_DIR$/microservice-parent/shared-schema" />
           </set>
         </option>
       </GradleProjectSettings>
