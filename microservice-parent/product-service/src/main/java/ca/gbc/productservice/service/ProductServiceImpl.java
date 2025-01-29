@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.List;
+import java.util.Optional;
+
 
 @Slf4j
 @Service
@@ -27,6 +29,7 @@ public class ProductServiceImpl implements ProductService{
         log.debug("Creating a new product {}", productRequest.name());
 
         Product product = Product.builder()
+                //.id(UUID.randomUUID().toString()) // esto lo agregue porque mongo esta usandolo como object id
                 .name(productRequest.name())
                 .description(productRequest.description())
                 .price(productRequest.price())
@@ -35,8 +38,11 @@ public class ProductServiceImpl implements ProductService{
         //persist a product
         productRepository.save(product);
         log.info("Product {} is saved", product.getId());
-        return new ProductResponse(product.getId(), product.getName(),
-                product.getDescription(), product.getPrice());
+        return new ProductResponse(
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getPrice());
 
 
     }
@@ -51,8 +57,11 @@ public class ProductServiceImpl implements ProductService{
     }
 
     private ProductResponse mapToProductResponse(Product product){
-        return new ProductResponse(product.getId(), product.getName(),
-                product.getDescription(), product.getPrice());
+        return new ProductResponse(
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getPrice());
     }
 
     @Override
@@ -78,4 +87,14 @@ public class ProductServiceImpl implements ProductService{
         productRepository.deleteById(productId);
 
     }
+
+    // Get order by ID
+    @Override
+    public ProductResponse getProductById(String productId) {
+        log.debug("Retrieving product with id {}", productId);
+        Optional<Product> product = productRepository.findById(productId);
+        return product.map(this::mapToProductResponse)
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + productId));
+    }
+
 }

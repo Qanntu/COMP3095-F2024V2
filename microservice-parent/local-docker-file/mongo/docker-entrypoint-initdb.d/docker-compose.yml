@@ -1,0 +1,52 @@
+# docker-compose -f docker-compose.yml up -d
+#
+# docker-compose -f docker-compose.yml -p my_custom_project_name up -d
+
+#For example: docker-compose -f docker-compose.yml -p local up -d
+
+# https://robert-askam.co.uk/posts/how-to-connect-mysql-workbench-to-running-mysql-inside-docker
+# For docker to read and execute the mongo-init.js file, the database must NOT already exist.configs:
+# That is, teh mongo-init.js file is only executed the one time, on newly initalized databases
+
+#version: '3.9'
+
+services:
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - ./docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js # The database will persist data here on the host machine
+      - ./db-data:/data/db # Initialize MongoDB WITH DATA FROM THIS SCRIPT
+    container_name: local-mongodb
+    #restart: unless-stopped
+    #command: mongod -auth
+    networks:
+      - spring
+
+  mongo-express:
+    image: mongo-express
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    container_name: local-mongoexpress
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+
+
+#optional volumes section for persisting data
+#volumes:
+ # mongo-db:
+  #  driver: local
+
+#networks:
+ # spring:
+  #  driver: bridge

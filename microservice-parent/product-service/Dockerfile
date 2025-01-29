@@ -45,7 +45,7 @@ ENV MONGO_DB_USERNAME=admin \
 
 # Expose port 8081 to allow communication with the containerized application
 #Expose does not actually make the port accessible to the host machine; it's documentation for the image.
-EXPOSE 8081
+EXPOSE 8084
 
 
 #The entrypoint instruction defines the command to run when the container starts

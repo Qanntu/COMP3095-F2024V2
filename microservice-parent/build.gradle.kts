@@ -15,14 +15,29 @@ java {
 
 repositories {
     mavenCentral()
+    maven {
+        url = uri("https://packages.confluent.io/maven/")
+    }
 }
 
-dependencies {
-    implementation("org.springframework.boot:spring-boot-starter")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+subprojects {
+    if (project.name != "shared-schema") {
+        apply(plugin = "java")
+        apply(plugin = "io.spring.dependency-management")
+
+        repositories {
+            mavenCentral()
+        }
+
+        dependencies {
+            implementation("org.springframework.boot:spring-boot-starter")
+            testImplementation("org.springframework.boot:spring-boot-starter-test")
+            testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+        }
+
+        tasks.withType<Test> {
+            useJUnitPlatform()
+        }
+    }
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
